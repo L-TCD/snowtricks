@@ -57,6 +57,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $tokenPassDate;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $username;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -220,6 +225,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTokenPassDate(?\DateTimeInterface $tokenPassDate): self
     {
         $this->tokenPassDate = $tokenPassDate;
+
+        return $this;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
 
         return $this;
     }
