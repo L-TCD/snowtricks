@@ -90,8 +90,8 @@ class AppFixtures extends Fixture
 				$category->addTrick($trick);
 				$manager->persist($category);
 
-				// between 0 and 5 images by trick
-				for ($i = 1; $i < mt_rand(1, 5); $i++) {
+				// between 1 and 5 images by trick
+				for ($i = 1; $i <= mt_rand(1, 5); $i++) {
 					$image = new Image();
 					$image->setFilename('fig.jpg')
 						->setName(ucfirst($faker->words(mt_rand(1, 5), true)))
