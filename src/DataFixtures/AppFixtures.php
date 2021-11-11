@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use Faker\Factory;
+use App\Entity\User;
 use App\Entity\Trick;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -23,6 +24,35 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
 		$faker = Factory::create('fr_FR');
+
+		$admin = new User();
+
+		$hash = $this->encoder->hashPassword($admin, "password");
+
+		$admin
+			->setEmail("admin@gmail.com")
+			->setUsername($faker->name())
+			->setPassword($hash);
+
+
+		$manager->persist($admin);
+
+		$users = [];
+
+		for ($u = 0; $u < 5; $u++) {
+			$user = new User();
+
+			$hash = $this->encoder->hashPassword($user, "password");
+
+			$user
+				->setEmail("user$u@gmail.com")
+				->setUsername($faker->name())
+				->setPassword($hash);
+
+			$users[] = $user;
+
+			$manager->persist($user);
+		}
 
 		for ($t = 0; $t < 20; $t++) {
 			$trick = new Trick;

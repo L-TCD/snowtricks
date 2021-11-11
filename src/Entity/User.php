@@ -2,15 +2,17 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Message;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
@@ -20,29 +22,20 @@ class User
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=180, unique=true)
      */
     private $email;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="json")
      */
-    private $username;
+    private $roles = [];
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string The hashed password
+     * @ORM\Column(type="string")
      */
     private $password;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $admin;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $active;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -64,16 +57,6 @@ class User
      */
     private $tokenPassDate;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Message::class, mappedBy="user")
-     */
-    private $messages;
-
-    public function __construct()
-    {
-        $this->messages = new ArrayCollection();
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -91,19 +74,47 @@ class User
         return $this;
     }
 
-    public function getUsername(): ?string
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
     {
-        return $this->username;
+        return (string) $this->email;
     }
 
-    public function setUsername(string $username): self
+    /**
+     * @deprecated since Symfony 5.3, use getUserIdentifier instead
+     */
+    public function getUsername(): string
     {
-        $this->username = $username;
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
 
         return $this;
     }
 
-    public function getPassword(): ?string
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -115,26 +126,52 @@ class User
         return $this;
     }
 
-    public function getAdmin(): ?bool
+    /**
+     * Returning a salt is only needed, if you are not using a modern
+     * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
+     *
+     * @see UserInterface
+     */
+    public function getSalt(): ?string
     {
-        return $this->admin;
+        return null;
     }
 
-    public function setAdmin(bool $admin): self
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
     {
-        $this->admin = $admin;
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+	    /**
+     * @return Collection|Message[]
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): self
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages[] = $message;
+            $message->setUser($this);
+        }
 
         return $this;
     }
 
-    public function getActive(): ?bool
+    public function removeMessage(Message $message): self
     {
-        return $this->active;
-    }
-
-    public function setActive(bool $active): self
-    {
-        $this->active = $active;
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getUser() === $this) {
+                $message->setUser(null);
+            }
+        }
 
         return $this;
     }
@@ -156,7 +193,7 @@ class User
         return $this->tokenDate;
     }
 
-    public function setTokenDate(\DateTimeInterface $tokenDate): self
+    public function setTokenDate(?\DateTimeInterface $tokenDate): self
     {
         $this->tokenDate = $tokenDate;
 
@@ -183,36 +220,6 @@ class User
     public function setTokenPassDate(?\DateTimeInterface $tokenPassDate): self
     {
         $this->tokenPassDate = $tokenPassDate;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Message[]
-     */
-    public function getMessages(): Collection
-    {
-        return $this->messages;
-    }
-
-    public function addMessage(Message $message): self
-    {
-        if (!$this->messages->contains($message)) {
-            $this->messages[] = $message;
-            $message->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMessage(Message $message): self
-    {
-        if ($this->messages->removeElement($message)) {
-            // set the owning side to null (unless already changed)
-            if ($message->getUser() === $this) {
-                $message->setUser(null);
-            }
-        }
 
         return $this;
     }
