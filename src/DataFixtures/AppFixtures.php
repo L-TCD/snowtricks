@@ -103,7 +103,7 @@ class AppFixtures extends Fixture
 				// between 0 and 5 videos by trick
 				for ($v = 1; $v < mt_rand(1, 5); $v++) {
 					$video = new Video();
-					$video->setVideoUrl('https://www.youtube.com/watch?v=CA5bURVJ5zk')
+					$video->setVideoUrl('https://www.youtube.com/embed/monyw0mnLZg')
 						->setName(ucfirst($faker->words(mt_rand(1, 5), true)))
 						->setTrick($trick);
 

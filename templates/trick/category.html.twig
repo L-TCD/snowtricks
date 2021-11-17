@@ -4,5 +4,32 @@
 
 {% block mainContent %}
 	{{ parent() }}
-	Test affichage category
+
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item">
+			<a href="{{ path('home') }}">Home</a>
+		</li>
+		<li class="breadcrumb-item active">{{ category.name }}</li>
+	</ol>
+
+	<h1 class="text-center">Category: {{ category.name }}</h1><br>
+
+	<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
+		{% for trick in category.tricks %}
+			<div class="col">
+				<div class="card text-center h-100">
+					{% for image in trick.images %}
+						{% if loop.first %}
+							<div class="embed-responsive embed-responsive-16by9">
+								<img src="{{ asset('images/' ~ image.filename) }}" class="card-img-top embed-responsive-item" alt="{{ image.name }}"/>
+							</div>
+						{% endif %}
+					{% endfor %}
+					<div class="card-body">
+						<a href="{{ path('trick_show', {'category_slug':trick.category.slug, 'slug':trick.slug}) }} ">{{ trick.name }}</a><br>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
 {% endblock %}

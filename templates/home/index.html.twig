@@ -16,7 +16,7 @@
 					{% for image in trick.images %}
 						{% if loop.first %}
 							<div class="embed-responsive embed-responsive-16by9">
-								<img src="{{ asset('uploads/' ~ image.filename) }}" class="card-img-top embed-responsive-item" alt="{{ image.name }}"/>
+								<img src="{{ asset('images/' ~ image.filename) }}" class="card-img-top embed-responsive-item" alt="{{ image.name }}"/>
 							</div>
 						{% endif %}
 					{% endfor %}
