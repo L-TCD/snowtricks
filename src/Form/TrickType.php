@@ -6,6 +6,7 @@ use App\Entity\Trick;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class TrickType extends AbstractType
 {
@@ -17,7 +18,13 @@ class TrickType extends AbstractType
             ->add('description')
             ->add('createdAt')
             ->add('updateAt')
-            ->add('category')
+            // ->add('category', FileType::class)
+			// ->add('images', FileType::class, [
+			// 	'label' => false,
+			// 	'multiple' => true,
+			// 	'mapped' => false,
+			// 	'required' => false
+			// ])
         ;
     }
 
