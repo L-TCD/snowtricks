@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ trick.name }}{% endblock %}
+
+{% block mainContent %}
+	{{ parent() }}
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item">
+			<a href="{{ path('home') }}">Home</a>
+		</li>
+		<li class="breadcrumb-item">
+			<a href="{{ path('category_show', {'slug': trick.category.slug}) }}">{{ trick.category.name }}</a>
+		</li>
+		<li class="breadcrumb-item active">{{ trick.name }}</li>
+	</ol>
+	{% for image in trick.images %}
+		{% if loop.first %}
+			<div class="embed-responsive embed-responsive-16by9">
+				<img src="{{ asset('images/' ~ image.filename) }}" class="card-img-top embed-responsive-item" alt="{{ image.name }}"/>
+			</div>
+		{% endif %}
+	{% endfor %}
+
+	<h1 class="text-center">{{ trick.name }}</h1>
+	<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
+		{% for image in trick.images %}
+			<div class="col">
+				<div class="card">
+					<img src="{{ asset('images/' ~ image.filename) }}" class="card-img-top embed-responsive-item" alt="{{ image.name }}"/>
+				</div>
+			</div>
+		{% endfor %}
+		{% for video in trick.videos %}
+			<div class="col">
+				<div class="card">
+					<iframe class="ratio " src="{{ video.videoUrl }}" title={{ video.name }} frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+				</div>
+			</div>
+		{% endfor %}
+
+	</div>
+
+{% endblock %}
